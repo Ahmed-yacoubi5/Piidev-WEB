@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}List events{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Events /</span> List</h4>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+               <!-- 
+ <a href="{{ path('create_event') }}" class="btn btn-primary">+ New Event</a> Form to create a new event -->
+        </div>
+        <div class="card-body">
+            {% if events is empty %}
+                <p>No events found.</p>
+            {% else %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Location</th>
+                            <th>Capacity</th>
+                            <th>Public</th>
+                            <th colspan="3" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.title }}</td> 
+                                <td>{{ event.startDate|date('Y-m-d H:i') }}</td>
+                                <td>{{ event.endDate|date('Y-m-d H:i') }}</td>
+                                <td>{{ event.location }}</td>
+                                <td>{{ event.capacity ?: 'N/A' }}</td>
+                                <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
+                                <td>
+                                    <a href="{{ path('event_show', { id: event.id }) }}" class="btn btn-icon btn-outline-info" title="View">
+                                        <i class='bx bx-show'></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('events_edit', { id: event.id }) }}" class="btn btn-icon btn-outline-warning" title="Edit">
+                                        <i class='bx bx-edit'></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="{{ path('event_delete', { id: event.id }) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                                        <button type="submit" class="btn btn-icon btn-outline-danger" title="Delete">
+                                            <i class="bx bx-trash"></i> 
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

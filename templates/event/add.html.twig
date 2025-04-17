@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+{% block title %}Create New Event{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Create New Event</h5>
+            
+        </div>
+        <div class="card-body">
+            <form id="eventForm">
+                <div class="mb-3">
+                    <label class="form-label" for="title">Title</label>
+                    <input type="text" id="title" class="form-control" required>
+                    <div class="invalid-feedback" id="titleError">Title cannot contain special characters.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" class="form-control"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="startDate">Start Date</label>
+                        <input type="datetime-local" id="startDate" class="form-control" required>
+                        <div class="invalid-feedback" id="startDateError">Start date is required.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="endDate">End Date</label>
+                        <input type="datetime-local" id="endDate" class="form-control" required>
+                        <div class="invalid-feedback" id="endDateError">End date should not be before start date.</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="location">Location</label>
+                    <input type="text" id="location" class="form-control" required>
+                    <div class="invalid-feedback" id="locationError">Location is required.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="capacity">Capacity</label>
+                    <input type="number" id="capacity" class="form-control" required>
+                    <div class="invalid-feedback" id="capacityError">Capacity must be an integer.</div>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" id="isPublic" class="form-check-input" checked>
+                    <label class="form-check-label" for="isPublic">Public Event</label>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="submitEvent()">Create Event</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="eventToastContainer"></div>
+</div>
+<script>
+    function submitEvent() {
+        // Clear previous errors
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const location = document.getElementById("location").value;
+        const capacity = document.getElementById("capacity").value;
+        const isPublic = document.getElementById("isPublic").checked;
+
+        // Validation
+        let valid = true;
+
+        // Check title for special characters
+        const titleRegex = /^[a-zA-Z0-9\s]*$/;
+        if (!title.match(titleRegex)) {
+            document.getElementById("titleError").style.display = 'block';
+            valid = false;
+        }
+
+        // Check start date and end date
+        if (new Date(endDate) <= new Date(startDate)) {
+            document.getElementById("endDateError").style.display = 'block';
+            valid = false;
+        }
+
+        // Check capacity is an integer
+        if (!Number.isInteger(Number(capacity)) || capacity <= 0) {
+            document.getElementById("capacityError").style.display = 'block';
+            valid = false;
+        }
+
+        // Check if required fields are filled
+        if (!title || !startDate || !endDate || !location) {
+            document.querySelectorAll('[required]').forEach(el => {
+                if (!el.value) {
+                    document.getElementById(el.id + 'Error').style.display = 'block';
+                    valid = false;
+                }
+            });
+        }
+
+        // If all validations passed, submit the form
+        if (valid) {
+            const eventData = {
+                title: title,
+                description: description,
+                startDate: startDate,
+                endDate: endDate,
+                location: location,
+                capacity: capacity,
+                isPublic: isPublic
+            };
+
+            fetch("{{ path('create_event') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(eventData)
+            })
+            .then(response => response.json())
+            
+            .then(data => {
+                showToast("Event created successfully!", "success");
+                setTimeout(() => {
+                    window.location.href = "{{ path('event_list') }}";
+                }, 1500);
+            })
+            .catch(error => {
+               showToast("Failed to create event. Please check your form inputs or try again.", "danger");
+            });
+        }
+    }
+    function showToast(message, type = 'primary') {
+    const container = document.getElementById("eventToastContainer");
+
+    const toastId = `toast-${Date.now()}`;
+    const toastHTML = `
+        <div id="${toastId}" class="bs-toast toast fade show bg-${type}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="icon-base bx bx-bell me-2"></i>
+                <div class="me-auto fw-medium">Event Manager</div>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", toastHTML);
+
+    const toastElement = document.getElementById(toastId);
+    const bsToast = new bootstrap.Toast(toastElement);
+    bsToast.show();
+
+    // Auto-remove toast after 5 seconds
+    setTimeout(() => toastElement.remove(), 5000);
+}
+
+</script>
+
+{% endblock %}

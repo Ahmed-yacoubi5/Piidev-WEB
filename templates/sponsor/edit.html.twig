@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block body %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header">Edit Event</h5>
+                <div class="card-body">
+                    <form method="post" id="editEventForm" onsubmit="return validateEditForm()">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ event.title }}" required>
+                            <div class="invalid-feedback" id="titleError">Title cannot contain special characters.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description" name="description" value="{{ event.description }}">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="datetime-local" class="form-control" id="startDate" name="startDate" value="{{ event.startDate|date('Y-m-d\\TH:i') }}" required>
+                                <div class="invalid-feedback" id="startDateError">Start date is required.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="datetime-local" class="form-control" id="endDate" name="endDate" value="{{ event.endDate|date('Y-m-d\\TH:i') }}" required>
+                                <div class="invalid-feedback" id="endDateError">End date should not be before start date.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" value="{{ event.location }}" required>
+                            <div class="invalid-feedback" id="locationError">Location is required.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="capacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" value="{{ event.capacity }}" required>
+                            <div class="invalid-feedback" id="capacityError">Capacity must be a positive integer.</div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="isPublic" name="isPublic" {% if event.isPublic %}checked{% endif %}>
+                            <label class="form-check-label" for="isPublic">Public Event</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Event</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('event_list') }}" class="btn btn-secondary mt-3">Back to Events</a>
+</div>
+
+<script>
+function validateEditForm() {
+    let valid = true;
+
+    // Clear all previous error messages
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+
+    // Get field values
+    const title = document.getElementById("title").value.trim();
+    const startDate = document.getElementById("startDate").value.trim();
+    const endDate = document.getElementById("endDate").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const capacity = document.getElementById("capacity").value.trim();
+
+    // Check required fields are filled
+    const requiredFields = [
+      { id: "title", errorId: "titleError", errorMessage: "Title is required." },
+      { id: "startDate", errorId: "startDateError", errorMessage: "Start date is required." },
+      { id: "endDate", errorId: "endDateError", errorMessage: "End date is required." },
+      { id: "location", errorId: "locationError", errorMessage: "Location is required." }
+    ];
+    requiredFields.forEach(field => {
+      if (!document.getElementById(field.id).value.trim()) {
+        document.getElementById(field.errorId).textContent = field.errorMessage;
+        document.getElementById(field.errorId).style.display = "block";
+        valid = false;
+      }
+    });
+
+    // Validate title: must contain only alphanumeric characters and spaces
+    const titleRegex = /^[a-zA-Z0-9\s]*$/;
+    if (!title.match(titleRegex)) {
+        document.getElementById("titleError").textContent = "Title cannot contain special characters.";
+        document.getElementById("titleError").style.display = "block";
+        valid = false;
+    }
+
+    // Validate dates: end date must be after start date
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+        document.getElementById("endDateError").textContent = "End date should not be before start date.";
+        document.getElementById("endDateError").style.display = "block";
+        valid = false;
+    }
+
+    // Validate capacity: must be a positive integer
+    if (capacity) {
+        const capacityNumber = Number(capacity);
+        if (!Number.isInteger(capacityNumber) || capacityNumber <= 0) {
+            document.getElementById("capacityError").textContent = "Capacity must be a positive integer.";
+            document.getElementById("capacityError").style.display = "block";
+            valid = false;
+        }
+    }
+
+    return valid;
+}
+</script>
+{% endblock %}
