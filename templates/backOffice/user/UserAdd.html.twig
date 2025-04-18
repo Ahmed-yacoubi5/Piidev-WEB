@@ -1,0 +1,72 @@
+{% extends 'base2.html.twig' %}
+
+{% block body %}
+<div class="card-body">
+    <div>
+        <h4 class="card-title"></h4>
+        <br><br><br>
+        <h1>{{ titre }} un Utilisateur</h1>
+        <p class="card-description"></p>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <!-- Nom -->
+        <div class="form-group">
+            {{ form_label(form.nom, 'Nom') }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.nom) }}</small>
+        </div>
+
+        <!-- Prénom -->
+        <div class="form-group">
+            {{ form_label(form.prenom, 'Prénom') }}
+            {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.prenom) }}</small>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            {{ form_label(form.email, 'Email') }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.email) }}</small>
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="form-group">
+            {{ form_label(form.plainPassword, 'Mot de passe') }}
+            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control p_input'}}) }}
+        </div>
+
+        <!-- Numéro de téléphone -->
+        <div class="form-group">
+            {{ form_label(form.numtlf, 'Numéro de téléphone') }}
+            {{ form_widget(form.numtlf, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.numtlf) }}</small>
+        </div>
+
+        <!-- Âge -->
+        <div class="form-group">
+            {{ form_label(form.age, 'Âge') }}
+            {{ form_widget(form.age, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.age) }}</small>
+        </div>
+
+        <!-- Photo de profil -->
+        <div class="form-group">
+            {{ form_label(form.photoDeProfile) }}
+            {{ form_widget(form.photoDeProfile, {'attr': {'class': 'form-control p_input', 'type': 'file'}}) }}
+        </div>
+
+        <!-- Rôles -->
+        <div class="form-group">
+            {{ form_label(form.roles, 'Rôles') }}
+            {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+            <small class="text-danger">{{ form_errors(form.roles) }}</small>
+        </div>
+
+        <button type="submit" class="btn btn-inverse-primary btn-fw">{{ titre }}</button>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+git init
+git clone https://github.com/chahedjouini/DigiFarm-Project.git
+cd DigiFarm-Project
+git checkout -b gestion_t3ik
+git push origin main
+git remote add origin https://github.com/chahedjouini/DigiFarm-Project.git
+git remote -v
+git fetch origin
+git pull origin main
+git push --set-upstream origin gestionEtude
+git checkout main
+git pull origin main
+git merge gestion_t3ik
+git push origin main

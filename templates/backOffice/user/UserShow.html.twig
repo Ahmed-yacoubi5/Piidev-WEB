@@ -1,0 +1,105 @@
+{% extends 'base2.html.twig' %}
+{% block body %}
+
+<div class="card-body">
+    <h4 class="card-title">Basic Table</h4>
+    <p class="card-description"> Add class <code>.table</code> </p>
+    <div class="mb-3">
+        <h1>Liste des Utilisateurs</h1>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un utilisateur..." onkeyup="filterUsers()">
+    </div>
+    <!-- Boutton d'ajout -->
+    <div class="mb-3">
+        <a href="{{ path('ajouter_user') }}" class="btn btn-inverse-primary btn-fw">Ajouter Utilisateur</a>
+        <button id="exportPdfBtn" class="btn btn-inverse-success btn-fw">
+            <i class="mdi mdi-file-pdf me-1"></i>Export to PDF
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table" id="userTable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Numéro de téléphone</th>
+                    <th>Âge</th>
+                    <th>Rôles</th>
+                    <th>Photo de profil</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.nom }}</td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.numtlf }}</td>
+                    <td>{{ user.age }}</td>
+                    <td>{{ user.roles|join(', ') }}</td>
+                    <td>
+                        <img src="{{ asset('uploads/images/' ~ user.photoDeProfile) }}" alt="Photo de profil" style="width: 50px;">
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Action</button>
+                            <div class="dropdown-menu">
+                                <a class="btn btn-inverse-danger btn-fw" href="{{ path('delete_user', { 'id': user.id }) }}">Supprimer</a>
+                                <a class="btn btn-inverse-primary btn-fw" href="{{ path('edit_user', { 'id': user.id }) }}">Modifier</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination et scripts JS adaptés à la liste des utilisateurs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function exportToPDF() {
+            const table = document.getElementById("userTable").cloneNode(true);
+            let headerRow = table.getElementsByTagName("thead")[0].rows[0];
+            let bodyRows = table.getElementsByTagName("tbody")[0].rows;
+            headerRow.deleteCell(headerRow.cells.length - 1);
+            for (let row of bodyRows) {
+                row.deleteCell(row.cells.length - 1);
+            }
+            const opt = { margin: 0.5, filename: `utilisateurs-${new Date().toISOString().split('T')[0]}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }};
+            html2pdf().set(opt).from(table).save();
+        }
+        document.addEventListener('DOMContentLoaded', function () { document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF); });
+
+        function filterUsers() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("#userTable tbody tr");
+            rows.forEach(row => row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none");
+        }
+
+        let currentPage = 1; const rowsPerPage = 3;
+        function paginateTable() {
+            let rows = document.querySelectorAll("#userTable tbody tr");
+            rows.forEach((row, i) => row.style.display = (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) ? "" : "none");
+            document.getElementById("page-info").textContent = `Page ${currentPage} / ${Math.ceil(rows.length / rowsPerPage)}`;
+        }
+        function prevPage() { if (currentPage > 1) { currentPage--; paginateTable(); } }
+        function nextPage() { let rows = document.querySelectorAll("#userTable tbody tr"); if (currentPage < Math.ceil(rows.length / rowsPerPage)) { currentPage++; paginateTable(); } }
+        document.addEventListener("DOMContentLoaded", paginateTable);
+    </script>
+
+    <div class="pagination-container mt-3">
+        <button onclick="prevPage()" class="btn btn-sm btn-primary">Précédent</button>
+        <span id="page-info" class="mx-2"></span>
+        <button onclick="nextPage()" class="btn btn-sm btn-primary">Suivant</button>
+    </div>
+</div>
+{% endblock %}

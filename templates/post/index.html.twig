@@ -1,0 +1,428 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-lg-5 py-4">
+    <div class="mx-auto" style="max-width: 1200px;">
+        {# Page Header #}
+        <div class="d-flex align-items-center mb-5">
+            <h1 class="display-4 fw-bold gradient-text mb-0">Community Forum</h1>
+            <div class="ms-3">
+                <i class="fas fa-comments fa-2x text-primary"></i>
+            </div>
+        </div>
+
+        {# Flash Messages - Position Fixed #}
+        <div class="flash-messages position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="fas fa-{{ label == 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        {# New Post Card #}
+        <div class="card border-0 shadow-lg mb-5 hover-scale">
+            <div class="card-header bg-gradient-primary text-white py-3">
+                <h3 class="mb-0"><i class="fas fa-pen-alt me-2"></i>Create New Post</h3>
+            </div>
+            <div class="card-body">
+                {{ form_start(postForm, {'attr': {'enctype': 'multipart/form-data', 'class': 'needs-validation'}}) }}
+                    <div class="mb-4">
+                        {{ form_label(postForm.title, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        
+                        {% set titleClass = 'form-control rounded-3' %}
+                        {% if postForm.title.vars.errors|length > 0 %}
+                            {% set titleClass = titleClass ~ ' is-invalid' %}
+                        {% endif %}
+
+                        {{ form_widget(postForm.title, {
+                            'attr': {
+                                'class': titleClass,
+                                'rows': 4,
+                            }
+                        }) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(postForm.title) }}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        {{ form_label(postForm.content, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        {% set contentClass = 'form-control rounded-3' %}
+                        {% if postForm.content.vars.errors|length > 0 %}
+                            {% set contentClass = contentClass ~ ' is-invalid' %}
+                        {% endif %}
+
+                        {{ form_widget(postForm.content, {
+                            'attr': {
+                                'class': contentClass,
+                                'rows': 4,
+                                'placeholder': 'Share your thoughts...'
+                            }
+                        }) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(postForm.content) }}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="file-upload-wrapper">
+                            {{ form_label(postForm.imageFile, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_widget(postForm.imageFile, {
+                                'attr': {
+                                    'class': 'form-control form-control-lg' ~ (postForm.imageFile.vars.errors|length > 0 ? ' is-invalid' : '')
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(postForm.imageFile) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        {{ form_widget(postForm.save, {'attr': {'class': 'btn btn-lg btn-gradient-primary fw-bold'}}) }}
+                    </div>
+                {{ form_end(postForm) }}
+            </div>
+        </div>
+
+        {# Posts Section (unchanged) #}
+        <div class="posts-container">
+            {% for post in posts %}
+                <div class="card post-card border-0 shadow-sm mb-4 hover-scale" id="post-{{ post.id }}">
+                    <div class="card-header bg-light-gradient d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar me-3">
+                                <div class="avatar-initials bg-primary text-white">
+                                    {{ post.author.nom|first|upper }}{{ post.author.prenom|first|upper }}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="mb-0" id="post-title-{{ post.id }}">{{ post.title }}</h4>
+                                <small class="text-muted">
+                                    Posted by {{ post.author.nom ~ ' ' ~ post.author.prenom }} 
+                                    <span class="mx-2">•</span>
+                                    {{ post.createdAt|date('d M Y H:i') }}
+                                </small>
+                            </div>
+                        </div>
+                        {% if app.user and app.user.id == post.author.id %}
+                        <div class="dropdown">
+                            <button class="btn btn-link text-decoration-none" type="button" id="dropdownMenuButton-{{ post.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton-{{ post.id }}">
+                                <li>
+                                    <button class="dropdown-item btn-inline-edit" data-post-id="{{ post.id }}">Edit Inline</button>
+                                </li>
+                                <li>
+                                    <form action="{{ path('forum_delete', {'id': post.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                                        <button class="dropdown-item" type="submit">Delete</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+                        {% if post.image %}
+                            <div class="post-image mb-4" id="post-image-container-{{ post.id }}">
+                                <img id="post-image-{{ post.id }}" src="{{ asset('uploads/images/' ~ post.image) }}" 
+                                     class="img-fluid rounded-3 shadow-sm" 
+                                     alt="Post image"
+                                     style="max-height: 400px; object-fit: cover;">
+                            </div>
+                        {% endif %}
+                        <div class="post-content mb-4" id="post-content-{{ post.id }}">
+                            {{ post.content|nl2br }}
+                        </div>
+
+                        {# Post Actions #}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-like btn-sm me-3" data-post-id="{{ post.id }}">
+                                    <i class="fas fa-heart me-2"></i>
+                                    <span class="like-count">{{ post.likes|length }}</span>
+                                </button>
+                                <button class="btn btn-comment-toggle btn-sm" data-post-id="{{ post.id }}">
+                                    <i class="fas fa-comment-alt me-2"></i>
+                                    <span class="comment-count">{{ post.comments|length }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {# Inline Edit Form (only for the author) #}
+                        {% if app.user and app.user.id == post.author.id %}
+                        <div class="collapse mb-4" id="edit-form-{{ post.id }}">
+                            <div class="card card-body">
+                                <div class="mb-3">
+                                    <label for="edit-title-{{ post.id }}" class="form-label fw-bold">Title</label>
+                                    <input type="text" class="form-control" id="edit-title-{{ post.id }}" value="{{ post.title }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-content-{{ post.id }}" class="form-label fw-bold">Content</label>
+                                    <textarea class="form-control" id="edit-content-{{ post.id }}" rows="4">{{ post.content }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-image-{{ post.id }}" class="form-label fw-bold">Upload New Image (optional)</label>
+                                    <input type="file" class="form-control" id="edit-image-{{ post.id }}">
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-secondary me-2 btn-cancel-edit" data-post-id="{{ post.id }}">Cancel</button>
+                                    <button class="btn btn-primary btn-save-edit" data-post-id="{{ post.id }}">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {# Comments Section (Collapse) #}
+                        <div class="comments-container collapse" id="comments-{{ post.id }}">
+                            <div class="comments-list">
+                                {% for comment in post.comments %}
+                                    <div class="comment-item bg-light rounded-3 p-3 mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="user-avatar me-2">
+                                                <div class="avatar-initials-sm bg-info text-white">
+                                                    {{ comment.author.nom|first|upper }}{{ comment.author.prenom|first|upper }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong>{{ comment.author.nom ~ ' ' ~ comment.author.prenom }}</strong>
+                                                <small class="text-muted ms-2">{{ comment.createdAt|date('d M Y H:i') }}</small>
+                                            </div>
+                                        </div>
+                                        <p class="mb-0">{{ comment.content }}</p>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-3">
+                                        <p class="text-muted">No comments yet. Be the first to comment!</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            {# Comment Form (Manual HTML; CSRF is disabled in CommentType) #}
+                            <form method="post" action="{{ path('forum_comment', {'id': post.id}) }}" class="comment-form mt-4">
+                                <div class="input-group">
+                                    <textarea name="comment[content]" class="form-control rounded-start" rows="2" placeholder="Write a comment..."></textarea>
+                                    <button type="submit" class="btn btn-primary rounded-end">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-comments fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted">No posts yet</h3>
+                    <p class="text-muted">Be the first to start a discussion!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --gradient-primary-hover: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    }
+    .gradient-text {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .hover-scale {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-scale:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .avatar-initials {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    .avatar-initials-sm {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+    .btn-gradient-primary {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-gradient-primary:hover {
+        background: var(--gradient-primary-hover);
+        color: white;
+    }
+    .bg-light-gradient {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .post-image img {
+        transition: transform 0.3s ease;
+    }
+    .post-image:hover img {
+        transform: scale(1.02);
+    }
+    .comment-item {
+        transition: transform 0.2s ease;
+    }
+    .comment-item:hover {
+        transform: translateX(5px);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Toggle comments collapse on comment button click
+    document.querySelectorAll('.btn-comment-toggle').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const commentsSection = document.querySelector(`#comments-${postId}`);
+            new bootstrap.Collapse(commentsSection, { toggle: true });
+        });
+    });
+
+    // Like button AJAX
+    document.querySelectorAll('.btn-like').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const postId = this.dataset.postId;
+            const heartIcon = this.querySelector('i');
+            const countElement = this.querySelector('.like-count');
+            heartIcon.style.transform = 'scale(1.2)';
+            setTimeout(() => heartIcon.style.transform = 'scale(1)', 300);
+            try {
+                const response = await fetch(`/forum/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token("authenticate") }}'
+                    }
+                });
+                const data = await response.json();
+                if(data.error) {
+                    showToast('error', data.error);
+                } else {
+                    countElement.textContent = data.likeCount;
+                    if(data.liked) {
+                        heartIcon.classList.add('text-danger');
+                    } else {
+                        heartIcon.classList.remove('text-danger');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'An error occurred while processing your request.');
+            }
+        });
+    });
+
+    // Inline edit: Toggle form on "Edit Inline" button click
+    document.querySelectorAll('.btn-inline-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const editForm = document.querySelector(`#edit-form-${postId}`);
+            new bootstrap.Collapse(editForm, { toggle: true });
+        });
+    });
+
+    // Inline edit: Cancel button – hide the form
+    document.querySelectorAll('.btn-cancel-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const editForm = document.querySelector(`#edit-form-${postId}`);
+            let collapseInstance = bootstrap.Collapse.getInstance(editForm);
+            if (!collapseInstance) {
+                collapseInstance = new bootstrap.Collapse(editForm, { toggle: false });
+            }
+            collapseInstance.hide();
+        });
+    });
+
+    // Inline edit: Save button AJAX (with file upload support)
+    document.querySelectorAll('.btn-save-edit').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const postId = this.dataset.postId;
+            const titleInput = document.querySelector(`#edit-title-${postId}`);
+            const contentInput = document.querySelector(`#edit-content-${postId}`);
+            const imageInput = document.querySelector(`#edit-image-${postId}`);
+            const updatedTitle = titleInput.value;
+            const updatedContent = contentInput.value;
+            
+            // Build FormData for file upload
+            const formData = new FormData();
+            formData.append('title', updatedTitle);
+            formData.append('content', updatedContent);
+            if (imageInput.files.length > 0) {
+                formData.append('imageFile', imageInput.files[0]);
+            }
+            
+            try {
+                const response = await fetch(`/forum/${postId}/update-inline`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token("authenticate") }}'
+                    },
+                    body: formData
+                });
+                const data = await response.json();
+                if(data.error) {
+                    showToast('error', data.error);
+                } else if(data.success) {
+                    // Update the post display with new title, content, and image (if provided)
+                    document.querySelector(`#post-title-${postId}`).textContent = data.title;
+                    document.querySelector(`#post-content-${postId}`).innerHTML = data.content;
+                    if (data.image) {
+                        const postImageEl = document.querySelector(`#post-image-${postId}`);
+                        if (postImageEl) {
+                            postImageEl.src = data.image;
+                        }
+                    }
+                    showToast('success', 'Post updated successfully.');
+                    // Hide the inline edit form
+                    const editForm = document.querySelector(`#edit-form-${postId}`);
+                    let collapseInstance = bootstrap.Collapse.getInstance(editForm);
+                    if (!collapseInstance) {
+                        collapseInstance = new bootstrap.Collapse(editForm, { toggle: false });
+                    }
+                    collapseInstance.hide();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'An error occurred while updating the post.');
+            }
+        });
+    });
+
+    function showToast(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        document.querySelector('.flash-messages').appendChild(toast);
+        new bootstrap.Toast(toast).show();
+    }
+});
+</script>
+{% endblock %}

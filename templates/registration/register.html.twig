@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>EventPlanner - Register</title>
+
+		<!-- Plugins: CSS -->
+		<link rel="stylesheet" href="{{ asset('assets/backOffice/vendors/mdi/css/materialdesignicons.min.css') }}">
+		<link
+		rel="stylesheet" href="{{ asset('assets/backOffice/vendors/css/vendor.bundle.base.css') }}">
+
+		<!-- Layout styles -->
+		<link rel="stylesheet" href="{{ asset('assets/backOffice/css/style.css') }}">
+		<link rel="shortcut icon" href="{{ asset('assets/frontOffice/newimg/logoicon.png') }}">
+	</head>
+	<body>
+		<div class="container-scroller">
+			<div class="container-fluid page-body-wrapper full-page-wrapper">
+				<div class="row w-100 m-0">
+					<div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+						<div class="card col-lg-4 mx-auto">
+							<div class="card-body px-5 py-5">
+								<h3 class="card-title text-left mb-3">Register</h3>
+
+								{% for flash_error in app.flashes('verify_email_error') %}
+									<div class="alert alert-danger">{{ flash_error }}</div>
+								{% endfor %}
+
+								{{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+								<div class="form-group">
+									{{ form_label(registrationForm.nom) }}
+									{{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.nom) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.prenom) }}
+									{{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.prenom) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.email) }}
+									{{ form_widget(registrationForm.email, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.email) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.age) }}
+									{{ form_widget(registrationForm.age, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.age) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+									{{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.plainPassword) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.photo) }}
+									{{ form_widget(registrationForm.photo, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.photo) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.numtlf, 'Numéro de téléphone') }}
+									{{ form_widget(registrationForm.numtlf, {'attr': {'class': 'form-control p_input'}}) }}
+									<div class="text-danger">{{ form_errors(registrationForm.numtlf) }}</div>
+								</div>
+
+								<div class="form-group">
+									{{ form_label(registrationForm.roles) }}
+									{{ form_widget(registrationForm.roles) }}
+									<div class="text-danger">{{ form_errors(registrationForm.roles) }}</div>
+								</div>
+
+							</div>
+
+
+							<div class="text-center mt-3">
+								<button type="submit" class="btn btn-primary btn-block enter-btn">Register</button>
+							</div>
+							{{ form_end(registrationForm) }}
+
+							<div class="text-center mt-3">
+								<a href="{{ path('app_login') }}" class="forgot-pass">Already have an account? Login</a>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
