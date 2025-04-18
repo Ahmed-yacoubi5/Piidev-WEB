@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Absence Management{% endblock %}
+
+{% block body %}
+    <section class="section-box-2">
+        <div class="box-head-single none-bg">
+            <div class="container">
+                <h4>Absence Management</h4>
+                <div class="row mt-15 mb-40">
+                    <div class="col-lg-7 col-md-9">
+                        <span class="text-mutted">Manage employee absences and time-off requests</span>
+                    </div>
+                    <div class="col-lg-5 col-md-3 text-lg-end text-start">
+                        <ul class="breadcrumbs mt-sm-15">
+                            <li><a href="#">Home</a></li>
+                            <li>Absence Management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-box mt-80">
+        <div class="container">
+            <div class="row flex-row-reverse">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 float-right">
+                    <div class="content-page">
+                        <div class="box-shadow-bdrd-15 box-filters mb-30 p-3">
+                            <form method="get" action="{{ path('app_absence_front_index') }}" class="row align-items-end gy-3">
+                                <!-- Champ de recherche -->
+                                <div class="col-lg-5 col-md-6">
+                                    <label for="query" class="form-label fw-bold">Search</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="query" 
+                                        name="query" 
+                                        placeholder="Employee name, type, or status..." 
+                                        value="{{ app.request.get('query') }}"
+                                    >
+                                </div>
+
+                                <!-- Tri -->
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="sort" class="form-label fw-bold">Sort by</label>
+                                    <select name="sort" id="sort" class="form-select">
+                                        <option value="">-- Select --</option>
+                                        <option value="datedebut" {% if app.request.get('sort') == 'datedebut' %}selected{% endif %}>Start Date</option>
+                                        <option value="datefin" {% if app.request.get('sort') == 'datefin' %}selected{% endif %}>End Date</option>
+                                        <option value="statut" {% if app.request.get('sort') == 'statut' %}selected{% endif %}>Status</option>
+                                    </select>
+                                </div>
+
+                                <!-- Ordre -->
+                                <div class="col-lg-2 col-md-6">
+                                    <label for="order" class="form-label fw-bold">Order</label>
+                                    <select name="order" id="order" class="form-select">
+                                        <option value="asc" {% if app.request.get('order') == 'asc' %}selected{% endif %}>Ascending</option>
+                                        <option value="desc" {% if app.request.get('order') == 'desc' %}selected{% endif %}>Descending</option>
+                                    </select>
+                                </div>
+
+                                <!-- Bouton de recherche -->
+                                <div class="col-lg-2 col-md-6 text-end">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="employers-list">
+                            <div class="card-employers hover-up wow animate__animated animate__fadeIn">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Type</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Employee</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for absence in absences %}
+                                            <tr>
+                                                <td>{{ absence.id }}</td>
+                                                <td>{{ absence.type }}</td>
+                                                <td>{{ absence.datedebut ? absence.datedebut|date('Y-m-d H:i:s') : '' }}</td>
+                                                <td>{{ absence.datefin ? absence.datefin|date('Y-m-d H:i:s') : '' }}</td>
+                                                <td>{{ absence.employeeId }}</td>
+                                                <td>
+                                                    <span class="badge 
+                                                        {% if absence.statut == 'Approved' %}bg-success
+                                                        {% elseif absence.statut == 'Pending' %}bg-warning
+                                                        {% elseif absence.statut == 'Rejected' %}bg-danger
+                                                        {% else %}bg-secondary
+                                                        {% endif %}">
+                                                        {{ absence.statut }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ path('app_absence_front_show', {'id': absence.id}) }}" class="btn btn-border btn-brand-hover">View</a>
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">No records found</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

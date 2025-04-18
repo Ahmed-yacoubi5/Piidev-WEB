@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Congés Management{% endblock %}
+
+{% block body %}
+    <section class="section-box-2">
+        <div class="box-head-single none-bg">
+            <div class="container">
+                <h4>Congés Management</h4>
+                <div class="row mt-15 mb-40">
+                    <div class="col-lg-7 col-md-9">
+                        <span class="text-mutted">Manage employee leaves and time-off periods</span>
+                    </div>
+                    <div class="col-lg-5 col-md-3 text-lg-end text-start">
+                        <ul class="breadcrumbs mt-sm-15">
+                            <li><a href="#">Home</a></li>
+                            <li>Congés Management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-box mt-80">
+        <div class="container">
+            <div class="row flex-row-reverse">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 float-right">
+                    <div class="content-page">
+                        <div class="box-filters-job mt-15 mb-10">
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <span class="text-small">Showing <strong>{{ conges|length }}</strong> leave requests</span>
+                                </div>
+                                <div class="col-lg-5 text-lg-end mt-sm-15">
+                                    <div class="display-flex2">
+                                        <a href="{{ path('app_conges_new') }}" class="btn btn-default">Create New Leave</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="employers-list">
+                            <div class="card-employers hover-up wow animate__animated animate__fadeIn">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Type</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Employee</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for conge in conges %}
+                                            <tr>
+                                                <td>{{ conge.id }}</td>
+                                                <td>{{ conge.type }}</td>
+                                                <td>{{ conge.datedebut ? conge.datedebut|date('Y-m-d') : '' }}</td>
+                                                <td>{{ conge.datefin ? conge.datefin|date('Y-m-d') : '' }}</td>
+                                                <td>{{ conge.employeeId }}</td>
+                                                <td>
+                                                    <span class="badge 
+                                                        {% if conge.statut == 'Approved' %}bg-success
+                                                        {% elseif conge.statut == 'Pending' %}bg-warning
+                                                        {% elseif conge.statut == 'Rejected' %}bg-danger
+                                                        {% else %}bg-secondary
+                                                        {% endif %}">
+                                                        {{ conge.statut }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="{{ path('app_conges_show', {'id': conge.id}) }}" class="btn btn-border btn-brand-hover">View</a>
+                                                        <a href="{{ path('app_conges_edit', {'id': conge.id}) }}" class="btn btn-border btn-brand-hover">Edit</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">No records found</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Congés Management{% endblock %}
+
+{% block body %}
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4">
+                <span class="text-muted fw-light">Gestion /</span> Congés
+            </h4>
+
+            <!-- Basic Bootstrap Table -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Gestion des congés</h5>
+                    <a href="{{ path('app_conges_back_new') }}" class="btn btn-primary">
+                        <i class="bx bx-plus me-1"></i> Nouveau congé
+                    </a>
+                </div>
+                <div class="table-responsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Employé</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            {% for conge in conges %}
+                                <tr class="text-center">
+                                    <td><strong>{{ conge.id }}</strong></td>
+                                    <td>{{ conge.type }}</td>
+                                    <td>{{ conge.datedebut ? conge.datedebut|date('Y-m-d') : '' }}</td>
+                                    <td>{{ conge.datefin ? conge.datefin|date('Y-m-d') : '' }}</td>
+                                    <td>{{ conge.employeeId }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if conge.statut == 'Approved' %}bg-label-success
+                                            {% elseif conge.statut == 'Pending' %}bg-label-warning
+                                            {% elseif conge.statut == 'Rejected' %}bg-label-danger
+                                            {% else %}bg-label-secondary
+                                            {% endif %} me-1">
+                                            {{ conge.statut }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{ path('app_conges_back_show', {'id': conge.id}) }}">
+                                                    <i class="bx bx-show me-1"></i> Voir
+                                                </a>
+                                                <a class="dropdown-item" href="{{ path('app_conges_back_edit', {'id': conge.id}) }}">
+                                                    <i class="bx bx-edit-alt me-1"></i> Modifier
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Aucun congé trouvé</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--/ Basic Bootstrap Table -->
+        </div>
+        <!-- / Content -->
+    </div>
+    <!-- Content wrapper -->
+{% endblock %}

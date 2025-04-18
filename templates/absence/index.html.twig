@@ -1,0 +1,86 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Absence Management{% endblock %}
+
+{% block body %}
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4">
+                <span class="text-muted fw-light">Gestion /</span> Absences
+            </h4>
+
+            <!-- Basic Bootstrap Table -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Gestion des absences</h5>
+                    <div>
+                        <a href="{{ path('app_absence_new') }}" class="btn btn-primary">
+                            <i class="bx bx-plus me-1"></i> Nouveau absence
+                        </a>
+                        <a href="{{ path('app_absence_stats') }}" class="btn btn-info ms-2">📊 View Stats</a>
+                    </div>
+                </div>
+                <div class="table-responsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Employé</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            {% for absence in absences %}
+                                <tr class="text-center">
+                                    <td><strong>{{ absence.id }}</strong></td>
+                                    <td>{{ absence.type }}</td>
+                                    <td>{{ absence.datedebut ? absence.datedebut|date('Y-m-d') : '' }}</td>
+                                    <td>{{ absence.datefin ? absence.datefin|date('Y-m-d') : '' }}</td>
+                                    <td>{{ absence.employeeId }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if absence.statut == 'Approved' %}bg-label-success
+                                            {% elseif absence.statut == 'Pending' %}bg-label-warning
+                                            {% elseif absence.statut == 'Rejected' %}bg-label-danger
+                                            {% else %}bg-label-secondary
+                                            {% endif %} me-1">
+                                            {{ absence.statut }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{ path('app_absence_show', {'id': absence.id}) }}">
+                                                    <i class="bx bx-show me-1"></i> Voir
+                                                </a>
+                                                <a class="dropdown-item" href="{{ path('app_absence_edit', {'id': absence.id}) }}">
+                                                    <i class="bx bx-edit-alt me-1"></i> Modifier
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Aucune absence trouvée</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--/ Basic Bootstrap Table -->
+        </div>
+        <!-- / Content -->
+    </div>
+    <!-- Content wrapper -->
+{% endblock %}

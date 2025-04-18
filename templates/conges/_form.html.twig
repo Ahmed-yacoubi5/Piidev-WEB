@@ -1,0 +1,66 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+            {{ form_label(form.type) }}
+            <div class="my-custom-error">
+                {{ form_errors(form.type) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.employee_id, {'attr': {'class': 'form-select'}}) }}
+            {{ form_label(form.employee_id) }}
+            <div class="my-custom-error">
+                {{ form_errors(form.employee_id) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.datedebut, {'attr': {'class': 'form-control datetimepicker'}}) }}
+            {{ form_label(form.datedebut) }}
+            <div class="my-custom-error">
+                {{ form_errors(form.datedebut) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-floating">
+            {{ form_widget(form.datefin, {'attr': {'class': 'form-control datetimepicker'}}) }}
+            {{ form_label(form.datefin) }}
+            <div class="my-custom-error">
+                {{ form_errors(form.datefin) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between border-top pt-4">
+    <div>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fi-rr-check mr-2"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+        <a href="{{ path('app_conges_index') }}" class="btn btn-outline-secondary px-4">
+            <i class="fi-rr-arrow-left mr-2"></i> Annuler
+        </a>
+    </div>
+    
+    {% if delete_form is defined %}
+        {{ form_start(delete_form, {'attr': {'class': 'd-inline'}}) }}
+            <button type="submit" class="btn btn-danger px-4" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce congé?')">
+                <i class="fi-rr-trash mr-2"></i> Supprimer
+            </button>
+        {{ form_end(delete_form) }}
+    {% endif %}
+</div>
+
+{{ form_end(form) }}

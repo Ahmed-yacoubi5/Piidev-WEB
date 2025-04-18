@@ -1,0 +1,18 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Nouveau Congé{% endblock %}
+
+{% block body %}
+<div class="container mt-50 mb-50">
+    <div class="card shadow p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0"><i class="fi-rr-calendar-plus mr-2"></i>Créer un nouveau congé</h2>
+            <a href="{{ path('app_conges_back_index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fi-rr-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        {{ include('conges_back/_form.html.twig', {'button_label': 'Créer'}) }}
+    </div>
+</div>
+{% endblock %}

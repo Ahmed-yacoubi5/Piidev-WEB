@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Congé Details{% endblock %}
+
+{% block body %}
+    <!-- Preloader Start -->
+
+
+    <section class="section-box">
+        <div class="box-head-single box-head-single-candidate">
+            <div class="container">
+                <div class="heading-main-info">
+                    <h4>Congé Details</h4>
+                    <div class="head-info-profile">
+                        <span class="text-small mr-20"><i class="fi-rr-id-badge text-mutted"></i> ID: {{ conge.id }}</span>
+                        <span class="text-small mr-20"><i class="fi-rr-user text-mutted"></i> Employee: {{ conge.employeeId }}</span>
+                        <span class="text-small"><i class="fi-rr-calendar text-mutted"></i> {{ conge.datedebut ? conge.datedebut|date('Y-m-d') : '' }} to {{ conge.datefin ? conge.datefin|date('Y-m-d') : '' }}</span>
+                    </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-9">
+                            <span class="badge 
+                                {% if conge.statut == 'Approved' %}bg-success
+                                {% elseif conge.statut == 'Pending' %}bg-warning
+                                {% elseif conge.statut == 'Rejected' %}bg-danger
+                                {% else %}bg-secondary
+                                {% endif %}">
+                                {{ conge.statut }}
+                            </span>
+                        </div>
+                        <div class="col-lg-3 text-lg-end">
+                            <ul class="breadcrumbs mt-10">
+                                <li><a href="{{ path('app_conges_index') }}">Home</a></li>
+                                <li>Congé Details</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                    <div class="content-single">
+                        <h4 class="mb-20">Leave Request Information</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Type</label>
+                                    <p class="form-control-static">{{ conge.type }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Status</label>
+                                <p class="form-control-static">
+                                    <span class="badge 
+                                        {% if conge.statut == 'Approved' %}bg-success
+                                        {% elseif conge.statut == 'Pending' %}bg-warning
+                                        {% elseif conge.statut == 'Rejected' %}bg-danger
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ conge.statut }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-20">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <p class="form-control-static">{{ conge.datedebut ? conge.datedebut|date('Y-m-d H:i:s') : '' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <p class="form-control-static">{{ conge.datefin ? conge.datefin|date('Y-m-d H:i:s') : '' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="single-apply-jobs">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <a href="{{ path('app_conges_index') }}" class="btn btn-default mr-15">
+                                        <i class="fi-rr-arrow-left mr-5"></i> Back to list
+                                    </a>
+                                </div>
+                                <div class="col-md-7 text-lg-end">
+                                    <a href="{{ path('app_conges_edit', {'id': conge.id}) }}" class="btn btn-border btn-sm mr-10">
+                                        <i class="fi-rr-edit mr-5"></i> Edit
+                                    </a>
+                                    {{ include('conges/_delete_form.html.twig') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
+                    <div class="sidebar-shadow">
+                        <h5 class="font-bold">Quick Summary</h5>
+                        <div class="sidebar-list-job mt-10">
+                            <ul>
+                                <li>
+                                    <div class="sidebar-icon-item"><i class="fi-rr-id-badge"></i></div>
+                                    <div class="sidebar-text-info">
+                                        <span class="text-description">Leave ID</span>
+                                        <strong class="small-heading">{{ conge.id }}</strong>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="sidebar-icon-item"><i class="fi-rr-user"></i></div>
+                                    <div class="sidebar-text-info">
+                                        <span class="text-description">Employee</span>
+                                        <strong class="small-heading">{{ conge.employeeId }}</strong>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="sidebar-icon-item"><i class="fi-rr-calendar"></i></div>
+                                    <div class="sidebar-text-info">
+                                        <span class="text-description">Duration</span>
+                                        <strong class="small-heading">
+                                            {{ conge.datedebut ? conge.datedebut|date('M d') : '' }} - 
+                                            {{ conge.datefin ? conge.datefin|date('M d, Y') : '' }}
+                                        </strong>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="sidebar-icon-item"><i class="fi-rr-time-fast"></i></div>
+                                    <div class="">
+                                        <span class="text-description">Status</span>
+                                        <strong class="small-heading">
+                                            <span class="badge 
+                                                {% if conge.statut == 'Approved' %}bg-success
+                                                {% elseif conge.statut == 'Pending' %}bg-warning
+                                                {% elseif conge.statut == 'Rejected' %}bg-danger
+                                                {% else %}bg-secondary
+                                                {% endif %}">
+                                                {{ conge.statut }}
+                                            </span>
+                                        </strong>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-shadow mt-30">
+                        <h5 class="font-bold">Actions</h5>
+                        <div class="sidebar-list-job mt-10">
+                            <a href="{{ path('app_conges_edit', {'id': conge.id}) }}" class="btn btn-default btn-block mb-10">
+                                <i class="fi-rr-edit mr-5"></i> Edit Leave
+                            </a>
+                            {{ include('conges/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

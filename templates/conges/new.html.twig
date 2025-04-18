@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Congé{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h5 mb-0 text-primary">
+                            <i class="fi-rr-calendar-plus me-2"></i>Créer un nouveau congé
+                        </h1>
+                        <a href="{{ path('app_conges_index') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fi-rr-arrow-left me-1"></i> Retour
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    {{ include('conges/_form.html.twig', {'button_label': 'Créer'}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ bienetre.nom }} - Review Details{% endblock %}
+
+{% block body %}
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <h2 class="section-title mb-20 wow animate__animated animate__fadeInUp">{{ bienetre.nom }}'s Review</h2>
+                        <p class="text-md-lh28 color-black-5 wow animate__animated animate__fadeInUp">Detailed well-being feedback analysis</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-50">
+                <div class="card-grid-2 hover-up wow animate__animated animate__fadeInUp">
+                    <div class="card-block-info">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th class="w-40">ID</th>
+                                                <td>{{ bienetre.id }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Employee Name</th>
+                                                <td>{{ bienetre.nom }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Rating</th>
+                                                <td>
+                                                    <div class="rating-stars">
+                                                        {% for i in 1..5 %}
+                                                            <i class="fi-rr-star{% if i <= bienetre.rate %}{{ ' filled' }}{% endif %}"></i>
+                                                        {% endfor %}
+                                                        <span class="rating-value">({{ bienetre.rate }}/5)</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th>Sentiment</th>
+                                                <td>
+                                                    <span class="badge 
+                                                        {% if bienetre.sentiment == 'Positive' %}bg-success
+                                                        {% elseif bienetre.sentiment == 'Negative' %}bg-danger
+                                                        {% else %}bg-warning
+                                                        {% endif %}">
+                                                        {{ bienetre.sentiment }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Full Review</th>
+                                                <td>{{ bienetre.review }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-30 text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_bienetre_index') }}" class="btn btn-border icon-chevron-left">
+                                    Back to list
+                                </a>
+                                <a href="{{ path('app_bienetre_edit', {'id': bienetre.id}) }}" class="btn btn-primary">
+                                    <i class="fi-rr-edit mr-5"></i> Edit Review
+                                </a>
+                                {{ include('bienetre/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .rating-stars {
+            display: flex;
+            align-items: center;
+        }
+        .rating-stars i {
+            color: #ddd;
+            margin-right: 2px;
+        }
+        .rating-stars i.filled {
+            color: #FFD700;
+        }
+        .rating-value {
+            margin-left: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .bg-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .bg-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .bg-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-group form {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .btn-group form button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-group form button:hover {
+            background-color: #ff1a1a;
+        }
+    </style>
+{% endblock %}
