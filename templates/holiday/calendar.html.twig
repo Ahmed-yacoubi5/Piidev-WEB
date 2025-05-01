@@ -1,0 +1,286 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jours fériés - {{ selected_country }}{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+  <style>
+    .calendar-container {
+      margin: 0 auto;
+      max-width: 1200px;
+      padding: 20px;
+    }
+    #calendar {
+      margin-top: 30px;
+      margin-bottom: 50px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .country-select {
+      margin: 30px 0;
+      text-align: center;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .country-select select {
+      padding: 10px 15px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      width: 200px;
+      background-color: white;
+      transition: border-color 0.3s;
+    }
+    .country-select select:focus {
+      border-color: #4B73FF;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(75, 115, 255, 0.25);
+    }
+    .country-select label {
+      margin-right: 10px;
+      font-weight: 500;
+    }
+    .calendar-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .calendar-subtitle {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 1.2rem;
+      color: #666;
+    }
+    .holiday-tooltip {
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 8px 12px;
+      font-size: 14px;
+      z-index: 9999;
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+    .alert-info {
+      color: #31708f;
+      background-color: #d9edf7;
+      border-color: #bce8f1;
+    }
+    .alert-warning {
+      color: #8a6d3b;
+      background-color: #fcf8e3;
+      border-color: #faebcc;
+    }
+    .alert-danger {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+    .debug-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .calendar-title {
+        font-size: 2rem;
+      }
+      .calendar-subtitle {
+        font-size: 1rem;
+      }
+      .country-select select {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <main class="main">
+    <section class="section-box mt-50">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="calendar-container">
+              <h1 class="calendar-title">Jours fériés</h1>
+              <p class="calendar-subtitle">{{ {'FR': 'France', 'MA': 'Maroc', 'US': 'États-Unis', 'DE': 'Allemagne', 'IT': 'Italie'}[selected_country] }}</p>
+
+              {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                  <div class="alert alert-{{ label }}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endfor %}
+
+              {% if error is defined and error %}
+                <div class="alert alert-warning">
+                  Impossible de récupérer les jours fériés depuis l'API. Affichage des données par défaut.
+                </div>
+              {% endif %}
+
+              <div class="country-select">
+                <form method="get" action="{{ path('calendar_view') }}">
+                  <label for="country">Choisir un pays :</label>
+                  <select name="country" id="country" onchange="this.form.submit()">
+                      {% for code, name in {
+                          'FR': 'France',
+                          'MA': 'Maroc',
+                          'US': 'États-Unis',
+                          'DE': 'Allemagne',
+                          'IT': 'Italie'
+                      } %}
+                        <option value="{{ code }}" {% if selected_country == code %}selected{% endif %}>{{ name }}</option>
+                      {% endfor %}
+                  </select>
+                </form>
+              </div>
+
+              <div id="calendar"></div>
+              
+              {% if holidays is empty %}
+                <div class="alert alert-info text-center mt-4">
+                  Aucun jour férié trouvé pour {{ {'FR': 'France', 'MA': 'Maroc', 'US': 'États-Unis', 'DE': 'Allemagne', 'IT': 'Italie'}[selected_country] }} en {{ year|default('2023') }}.
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('FullCalendar initialization started');
+      
+      // Obtenir l'élément calendrier
+      const calendarEl = document.getElementById('calendar');
+      
+      // Vérifier si l'élément existe
+      if (!calendarEl) {
+        console.error('Élément calendrier non trouvé');
+        return;
+      }
+
+      console.log('Calendar element found, proceeding with initialization');
+
+      // Vérifier si des événements sont disponibles
+      const hasEvents = {{ holidays|length > 0 ? 'true' : 'false' }};
+      if (!hasEvents) {
+        console.warn('Aucun événement disponible pour le calendrier');
+      } else {
+        console.log('Found {{ holidays|length }} holidays to display');
+      }
+
+      // Événements à afficher dans le calendrier
+      const events = [
+        {% for holiday in holidays %}
+          {
+            id: '{{ loop.index }}',
+            title: '{{ holiday.name|e('js') }}',
+            start: '{{ holiday.date.iso|default(holiday.date)|e('js') }}',
+            allDay: true,
+            backgroundColor: '{% if loop.index is odd %}#4B73FF{% else %}#5D3FD3{% endif %}',
+            borderColor: '{% if loop.index is odd %}#4B73FF{% else %}#5D3FD3{% endif %}',
+            textColor: '#FFFFFF',
+            description: '{{ holiday.description|default('')|e('js') }}'
+          }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ];
+
+      console.log('Events prepared:', events);
+
+      // Initialiser FullCalendar
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listMonth'
+        },
+        events: events,
+        eventDidMount: function(info) {
+          // Amélioration des infobulles avec Popper.js
+          const tooltip = document.createElement('div');
+          tooltip.classList.add('holiday-tooltip');
+          tooltip.innerHTML = 
+            '<strong>' + info.event.title + '</strong>' + 
+            (info.event.extendedProps.description ? '<br>' + info.event.extendedProps.description : '');
+          
+          document.body.appendChild(tooltip);
+          
+          tooltip.style.display = 'none';
+          
+          const showTooltip = function(event) {
+            const popper = Popper.createPopper(info.el, tooltip, {
+              placement: 'top',
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 8],
+                  },
+                },
+              ],
+            });
+            
+            tooltip.style.display = 'block';
+            popper.update();
+          };
+          
+          const hideTooltip = function() {
+            tooltip.style.display = 'none';
+          };
+          
+          info.el.addEventListener('mouseenter', showTooltip);
+          info.el.addEventListener('mouseleave', hideTooltip);
+          
+          info.el.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            showTooltip();
+            
+            // Hide tooltip after 2 seconds on touch devices
+            setTimeout(hideTooltip, 2000);
+          });
+        },
+        themeSystem: 'bootstrap',
+        height: 'auto'
+      });
+      
+      console.log('Calendar configured, rendering now');
+      
+      // Rendre le calendrier
+      try {
+        calendar.render();
+        console.log('Calendar rendered successfully');
+      } catch (error) {
+        console.error('Error rendering calendar:', error);
+      }
+    });
+  </script>
+{% endblock %}

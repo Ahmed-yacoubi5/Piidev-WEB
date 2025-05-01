@@ -1,0 +1,121 @@
+{{ form_start(form, {'attr': {'class': 'form-jobhub', 'novalidate': 'novalidate'}}) }}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                {{ form_label(form.nom, 'Employee Name', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.nom, {'attr': {
+                    'class': 'form-input',
+                    'placeholder': 'Enter employee name',
+                }}) }}
+                {{ form_errors(form.nom) }}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                {{ form_label(form.rate, 'Rating (1-5)', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="rating-input">
+                    {{ form_widget(form.rate, {'attr': {
+                        'class': 'form-select',
+                        'min': '1',
+                        'max': '5'
+                    }}) }}
+                    <div class="rating-preview mt-2">
+                        {% for i in 1..5 %}
+                            <i class="fi-rr-star{% if i <= form.rate.vars.value %}{{ ' filled' }}{% endif %}" data-value="{{ i }}"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                {{ form_errors(form.rate) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                {{ form_label(form.review, 'Review', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.review, {'attr': {
+                    'class': 'form-input',
+                    'rows': '4',
+                    'placeholder': 'Enter your detailed review...'
+                }}) }}
+                {{ form_errors(form.review) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                {{ form_label(form.sentiment, 'Sentiment Analysis', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.sentiment, {'attr': {
+                    'class': 'form-select'
+                }}) }}
+                {{ form_errors(form.sentiment) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-30 text-center">
+        <button type="submit" class="btn btn-default btn-shadow hover-up">
+            <i class="fi-rr-disk mr-5"></i> {{ button_label|default('Save Review') }}
+        </button>
+        <a href="{{ path('app_bienetre_index') }}" class="btn btn-border icon-chevron-right ml-20">Cancel</a>
+    </div>
+{{ form_end(form) }}
+
+<style>
+    .rating-input {
+        position: relative;
+    }
+    .rating-preview {
+        display: flex;
+        gap: 5px;
+    }
+    .rating-preview i {
+        color: #ddd;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: color 0.2s;
+    }
+    .rating-preview i.filled {
+        color: #FFD700;
+    }
+    .form-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Star rating interaction
+        const stars = document.querySelectorAll('.rating-preview i');
+        const rateInput = document.getElementById('{{ form.rate.vars.id }}');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.getAttribute('data-value');
+                rateInput.value = value;
+                updateStars(value);
+            });
+        });
+
+        function updateStars(value) {
+            stars.forEach(star => {
+                const starValue = star.getAttribute('data-value');
+                star.classList.toggle('filled', starValue <= value);
+            });
+        }
+
+        // Initialize stars based on current value
+        if (rateInput.value) {
+            updateStars(rateInput.value);
+        }
+    });
+</script>

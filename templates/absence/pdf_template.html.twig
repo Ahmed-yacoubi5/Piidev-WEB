@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Absence PDF{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+            margin: 0 0 10px 0;
+        }
+        .header-info {
+            font-size: 14px;
+            color: #666;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+            font-size: 10px;
+            color: #6c757d;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        h1, h2, h3 {
+            color: #0d6efd;
+        }
+        .page-number {
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+        }
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-approved {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="float: left; width: 30%;">
+            <img src="{% block logo_path %}{{ absolute_url(asset('assets/img/logo.png')) }}{% endblock %}" class="header-logo">
+        </div>
+        <div style="float: right; width: 70%; text-align: right;">
+            <h1 class="header-title">{% block header_title %}Absence PDF{% endblock %}</h1>
+            <div class="header-info">
+                <p>BAHA RH Management System</p>
+                <p>{% block header_additional %}{% endblock %}</p>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        <div class="page-number">Page 1</div>
+        <p>BAHA RH Management System &copy; {{ "now"|date("Y") }}</p>
+        {% block footer_additional %}{% endblock %}
+    </div>
+</body>
+</html> 

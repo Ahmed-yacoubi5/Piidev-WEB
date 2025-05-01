@@ -1,0 +1,90 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Congé Details{% endblock %}
+
+{% block body %}
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <h2 class="section-title mb-20 wow animate__animated animate__fadeInUp">Congé Details</h2>
+                        <p class="text-md-lh28 color-black-5 wow animate__animated animate__fadeInUp">Here are the details of the selected leave request.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-50">
+                <div class="card shadow hover-up wow animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h5 class="mb-3">Congé Information</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th>ID</th>
+                                                <td>{{ conge.id }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Type</th>
+                                                <td>{{ conge.type }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Start Date</th>
+                                                <td>{{ conge.datedebut ? conge.datedebut|date('Y-m-d H:i:s') : 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>End Date</th>
+                                                <td>{{ conge.datefin ? conge.datefin|date('Y-m-d H:i:s') : 'N/A' }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <h5 class="mb-3">Employee Information</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th>Employee</th>
+                                                <td>{{ conge.employeeId }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>
+                                                    <span class="badge 
+                                                        {% if conge.statut == 'Approved' %}bg-success
+                                                        {% elseif conge.statut == 'Pending' %}bg-warning
+                                                        {% elseif conge.statut == 'Rejected' %}bg-danger
+                                                        {% else %}bg-secondary
+                                                        {% endif %}">
+                                                        {{ conge.statut }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-30 text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_conges_back_index') }}" class="btn btn-default">
+                                    <i class="fi-rr-arrow-left mr-5"></i> Back to list
+                                </a>
+                                <a href="{{ path('app_conges_back_edit', {'id': conge.id}) }}" class="btn btn-primary">
+                                    <i class="fi-rr-edit mr-5"></i> Edit
+                                </a>
+                                {{ include('conges_back/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

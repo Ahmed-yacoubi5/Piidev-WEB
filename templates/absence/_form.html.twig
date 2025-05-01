@@ -1,0 +1,113 @@
+{{ form_start(form, {'attr': {'class': 'form-jobhub', 'novalidate': 'novalidate'}}) }}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">{{ form_label(form.type) }}</label>
+            <div class="input-group input-group-merge">
+                <span class="input-group-text">
+                    <i class="bx bx-category"></i>
+                </span>
+                {{ form_widget(form.type, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Type de congé'
+                    }
+                }) }}
+            </div>
+            <small class="text-muted">{{ form_help(form.type) }}</small>
+            <div class="text-danger">{{ form_errors(form.type) }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">{{ form_label(form.employee_id) }}</label>
+            <div class="input-group input-group-merge">
+                <span class="input-group-text">
+                    <i class="bx bx-user"></i>
+                </span>
+                {{ form_widget(form.employee_id, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Employé'
+                    }
+                }) }}
+            </div>
+            <small class="text-muted">{{ form_help(form.employee_id) }}</small>
+            <div class="text-danger">{{ form_errors(form.employee_id) }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">{{ form_label(form.datedebut) }}</label>
+            <div class="input-group input-group-merge">
+                <span class="input-group-text">
+                    <i class="bx bx-calendar"></i>
+                </span>
+                {{ form_widget(form.datedebut, {
+                    'attr': {
+                        'class': 'form-control datepicker',
+                        'placeholder': 'Date de début'
+                    }
+                }) }}
+            </div>
+            <small class="text-muted">{{ form_help(form.datedebut) }}</small>
+            <div class="text-danger">{{ form_errors(form.datedebut) }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">{{ form_label(form.datefin) }}</label>
+            <div class="input-group input-group-merge">
+                <span class="input-group-text">
+                    <i class="bx bx-calendar"></i>
+                </span>
+                {{ form_widget(form.datefin, {
+                    'attr': {
+                        'class': 'form-control datepicker',
+                        'placeholder': 'Date de fin'
+                    }
+                }) }}
+            </div>
+            <small class="text-muted">{{ form_help(form.datefin) }}</small>
+            <div class="text-danger">{{ form_errors(form.datefin) }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">{{ form_label(form.statut) }}</label>
+            <div class="input-group input-group-merge">
+                <span class="input-group-text">
+                    <i class="bx bx-stats"></i>
+                </span>
+                {{ form_widget(form.statut, {
+                    'attr': {
+                        'class': 'form-select',
+                        'placeholder': 'Statut'
+                    }
+                }) }}
+            </div>
+            <small class="text-muted">{{ form_help(form.statut) }}</small>
+            <div class="text-danger">{{ form_errors(form.statut) }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary me-2">
+        <i class="bx bx-save me-1"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+    <a href="{{ path('app_absence_index') }}" class="btn btn-outline-secondary">
+        <i class="bx bx-arrow-back me-1"></i> Annuler
+    </a>
+</div>
+
+{{ form_end(form) }}

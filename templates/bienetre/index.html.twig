@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bien-être Reviews{% endblock %}
+
+{% block body %}
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="section-title mb-20 wow animate__animated animate__fadeInUp">Bien-être Reviews</h2>
+                    <p class="text-md-lh28 color-black-5 wow animate__animated animate__fadeInUp">Manage and analyze employee well-being feedback</p>
+                </div>
+                <div class="col-lg-4 text-lg-end text-start wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                    <a href="{{ path('app_bienetre_new') }}" class="btn btn-default btn-shadow hover-up">Add New Review</a>
+                </div>
+            </div>
+
+            <div class="mt-70">
+                <div class="card-grid-2 hover-up wow animate__animated animate__fadeInUp">
+                    <div class="card-block-info">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Review</th>
+                                        <th>Rating</th>
+                                        <th>Sentiment</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for bienetre in bienetres %}
+                                    <tr>
+                                        <td>{{ bienetre.id }}</td>
+                                        <td><strong>{{ bienetre.nom }}</strong></td>
+                                        <td class="text-truncate" style="max-width: 200px;" title="{{ bienetre.review }}">{{ bienetre.review }}</td>
+                                        <td>
+                                            <div class="rating-stars">
+                                                {% for i in 1..5 %}
+                                                    <i class="fi-rr-star{% if i <= bienetre.rate %}{{ ' filled' }}{% endif %}"></i>
+                                                {% endfor %}
+                                                <span class="rating-value">({{ bienetre.rate }}/5)</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if bienetre.sentiment == 'Positive' %}bg-success
+                                                {% elseif bienetre.sentiment == 'Negative' %}bg-danger
+                                                {% else %}bg-warning
+                                                {% endif %}">
+                                                {{ bienetre.sentiment }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group">
+                                                <a href="{{ path('app_bienetre_show', {'id': bienetre.id}) }}" class="btn btn-sm btn-primary" title="View">
+                                                    <i class="fi-rr-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_bienetre_edit', {'id': bienetre.id}) }}" class="btn btn-sm btn-secondary" title="Edit">
+                                                    <i class="fi-rr-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">No reviews found</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .rating-stars {
+            display: flex;
+            align-items: center;
+        }
+        .rating-stars i {
+            color: #FFD700;
+            margin-right: 2px;
+        }
+        .rating-stars i.filled {
+            color: #FFD700;
+        }
+        .rating-value {
+            margin-left: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .bg-success {
+            background-color: #28a745;
+        }
+        .bg-danger {
+            background-color: #dc3545;
+        }
+        .bg-warning {
+            background-color: #ffc107;
+        }
+    </style>
+{% endblock %}

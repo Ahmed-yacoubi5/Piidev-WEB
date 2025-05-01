@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Well-being Review{% endblock %}
+
+{% block body %}
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <h2 class="section-title mb-20 wow animate__animated animate__fadeInUp">Edit Well-being Review</h2>
+                        <p class="text-md-lh28 color-black-5 wow animate__animated animate__fadeInUp">Update employee well-being assessment details</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-50">
+                <div class="card-grid-2 hover-up wow animate__animated animate__fadeInUp">
+                    <div class="card-block-info">
+                        {{ include('bienetre/_form.html.twig', {'button_label': 'Update'}) }}
+
+                        <div class="mt-30 text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_bienetre_index') }}" class="btn btn-border icon-chevron-left">
+                                    <i class="fi-rr-arrow-left mr-5"></i> Back to list
+                                </a>
+                                {{ include('bienetre/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-group form {
+            margin: 0;
+        }
+        .btn-group form button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-group form button:hover {
+            background-color: #ff1a1a;
+            transform: translateY(-2px);
+        }
+        .btn-group form button i {
+            margin-right: 5px;
+        }
+    </style>
+{% endblock %}

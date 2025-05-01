@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jours fériés{% endblock %}
+
+{% block body %}
+    <h1>Jours fériés en France (2025)</h1>
+
+    <ul>
+        {% for holiday in holidays %}
+            <li>
+                <strong>{{ holiday.date.iso | date('d/m/Y') }}</strong> :
+                {{ holiday.name }} ({{ holiday.type | join(', ') }})
+            </li>
+        {% else %}
+            <li>Aucun jour férié trouvé.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{# Renommé de index.html.twig à calendar.html.twig dans le dossier holidays #}
+{% block title %}Calendrier des jours fériés{% endblock %}
+
+{% block stylesheets %}
+  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+  <h1>Jours fériés - {{ selected_country }}</h1>
+
+  <form method="get" action="{{ path('calendar_view') }}">
+    <label for="country">Choisir un pays :</label>
+    <select name="country" id="country" onchange="this.form.submit()">
+        {% for code, name in {
+            'FR': 'France',
+            'MA': 'Maroc',
+            'US': 'États-Unis',
+            'DE': 'Allemagne',
+            'IT': 'Italie'
+        } %}
+          <option value="{{ code }}" {% if selected_country == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+  </form>
+
+  <div id="calendar" style="margin-top: 20px;"></div>
+{% endblock %}
+
+{% block javascripts %}
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales/fr.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let calendarEl = document.getElementById('calendar');
+
+      let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        events: [
+          {% for holiday in holidays %}
+            {
+              title: '{{ holiday.name|e('js') }}',
+              start: '{{ holiday.date.iso|default(holiday.date.iso|default(holiday.date)) }}'
+            },
+          {% endfor %}
+        ]
+      });
+
+      calendar.render();
+    });
+  </script>
+{% endblock %}

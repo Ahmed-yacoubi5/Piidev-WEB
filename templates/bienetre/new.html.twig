@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Well-being Review{% endblock %}
+
+{% block body %}
+    <section class="section-box mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <h2 class="section-title mb-20 wow animate__animated animate__fadeInUp">Create New Well-being Review</h2>
+                        <p class="text-md-lh28 color-black-5 wow animate__animated animate__fadeInUp">Add a new employee well-being assessment to the system</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-50">
+                <div class="card-grid-2 hover-up wow animate__animated animate__fadeInUp">
+                    <div class="card-block-info">
+                        {{ include('bienetre/_form.html.twig') }}
+
+                        <div class="mt-30 text-center">
+                            <a href="{{ path('app_bienetre_index') }}" class="btn btn-border icon-chevron-left">
+                                <i class="fi-rr-arrow-left mr-5"></i> Back to list
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

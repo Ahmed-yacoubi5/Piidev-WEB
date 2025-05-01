@@ -1,0 +1,77 @@
+{% extends 'absence/pdf_template.html.twig' %}
+
+{% block title %}Liste des Absences{% endblock %}
+
+{% block header_title %}Liste des Demandes d'Absence{% endblock %}
+
+{% block header_additional %}Document généré le {{ "now"|date("d/m/Y à H:i") }}{% endblock %}
+
+{% block content %}
+    <h2>Récapitulatif des Absences</h2>
+    
+    {% if filter is defined %}
+    <div class="filter-info">
+        <p><strong>Filtres appliqués:</strong> 
+        {% if filter.startDate %}De {{ filter.startDate|date('d/m/Y') }}{% endif %}
+        {% if filter.endDate %}à {{ filter.endDate|date('d/m/Y') }}{% endif %}
+        {% if filter.status %} - Statut: {{ filter.status }}{% endif %}
+        {% if filter.type %} - Type: {{ filter.type }}{% endif %}
+        </p>
+    </div>
+    {% endif %}
+    
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div style="width: 32%; background: #d1e7dd; padding: 15px; border-radius: 5px; text-align: center;">
+            <h3 style="margin: 0 0 10px 0; color: #0f5132;">Approuvées</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">{{ approved }}</p>
+        </div>
+        <div style="width: 32%; background: #fff3cd; padding: 15px; border-radius: 5px; text-align: center;">
+            <h3 style="margin: 0 0 10px 0; color: #664d03;">En attente</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">{{ pending }}</p>
+        </div>
+        <div style="width: 32%; background: #f8d7da; padding: 15px; border-radius: 5px; text-align: center;">
+            <h3 style="margin: 0 0 10px 0; color: #842029;">Rejetées</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">{{ rejected }}</p>
+        </div>
+    </div>
+    
+    <table class="absences-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Employé</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for absence in absences %}
+            <tr>
+                <td>{{ absence.id }}</td>
+                <td>{{ absence.type }}</td>
+                <td>{{ absence.datedebut|date('d/m/Y') }}</td>
+                <td>{{ absence.datefin|date('d/m/Y') }}</td>
+                <td>{{ absence.employeeId }}</td>
+                <td>
+                    <span class="status 
+                        {% if absence.statut == 'Approved' %}status-approved
+                        {% elseif absence.statut == 'Pending' %}status-pending
+                        {% elseif absence.statut == 'Rejected' %}status-rejected{% endif %}">
+                        {{ absence.statut }}
+                    </span>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center">Aucune absence trouvée</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block footer_additional %}
+    <p>Total: {{ absences|length }} absences</p>
+{% endblock %} 

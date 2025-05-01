@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport des Absences</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.4;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #2F80ED;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .status-approved {
+            color: #27AE60;
+            font-weight: bold;
+        }
+        .status-pending {
+            color: #F2C94C;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: #EB5757;
+            font-weight: bold;
+        }
+        .date-generated {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        .summary {
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            color: #2F80ED;
+            margin-bottom: 15px;
+        }
+        .summary-item {
+            display: inline-block;
+            width: 30%;
+            margin-right: 3%;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .summary-item h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+        .summary-item p {
+            margin: 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Rapport des Absences</h1>
+            <p>Système de gestion des ressources humaines</p>
+        </div>
+
+        <div class="date-generated">
+            Généré le : {{ "now"|date("d/m/Y H:i") }}
+        </div>
+
+        {% if summary is defined %}
+        <div class="summary">
+            <h2>Résumé</h2>
+            <div class="summary-item">
+                <h3>{{ summary.total }}</h3>
+                <p>Absences totales</p>
+            </div>
+            <div class="summary-item">
+                <h3>{{ summary.pending }}</h3>
+                <p>En attente</p>
+            </div>
+            <div class="summary-item">
+                <h3>{{ summary.approved }}</h3>
+                <p>Approuvées</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Employé</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for absence in absences %}
+                <tr>
+                    <td>{{ absence.id }}</td>
+                    <td>{{ absence.type }}</td>
+                    <td>{{ absence.datedebut ? absence.datedebut|date('Y-m-d') : 'N/A' }}</td>
+                    <td>{{ absence.datefin ? absence.datefin|date('Y-m-d') : 'N/A' }}</td>
+                    <td>{{ absence.employeeId }}</td>
+                    <td>
+                        <span class="status-{% if absence.statut == 'Approved' %}approved{% elseif absence.statut == 'Pending' %}pending{% elseif absence.statut == 'Rejected' %}rejected{% endif %}">
+                            {{ absence.statut }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>© {{ "now"|date("Y") }} - Système de Gestion des Ressources Humaines</p>
+        </div>
+    </div>
+</body>
+</html> 
