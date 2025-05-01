@@ -1,0 +1,103 @@
+
+
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Create New Sponsor</h5>
+        </div>
+        <div class="card-body">
+            <form id="sponsorForm">
+                <div class="mb-3">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" id="name" class="form-control" required>
+                    <div class="invalid-feedback" id="nameError">Name is required and must not contain special characters.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="website">Website</label>
+                    <input type="url" id="website" class="form-control">
+                    <div class="invalid-feedback" id="websiteError">Website must be a valid URL.</div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="submitSponsor()">Create Sponsor</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="toastContainer"></div>
+</div>
+
+<script>
+   function submitSponsor() {
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+
+    const name = document.getElementById("name").value.trim();
+    const website = document.getElementById("website").value.trim();
+
+    let valid = true;
+    const nameRegex = /^[a-zA-Z0-9\s\-]+$/;
+
+    if (!name.match(nameRegex)) {
+        document.getElementById("nameError").style.display = 'block';
+        valid = false;
+    }
+
+    if (website && !website.match(/^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,}(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i)) {
+        document.getElementById("websiteError").style.display = 'block';
+        valid = false;
+    }
+
+    if (!valid) {
+        showToast("Please correct the highlighted errors in the form.", "danger");
+        return;
+    }
+
+    const sponsorData = {
+        name: name,
+        website: website || null
+    };
+
+    fetch("{{ path('app_sponsor_new') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sponsorData)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to create sponsor');
+        return response.json();
+    })
+    .then(data => {
+        showToast("Sponsor created successfully!", "primary");
+        document.getElementById("sponsorForm").reset();
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        showToast("Failed to create sponsor. Please try again later.", "danger");
+    });
+}
+
+    function showToast(message, type = 'primary') {
+    const container = document.getElementById("toastContainer");
+    const toastId = `toast-${Date.now()}`;
+
+    const toastHTML = `
+        <div id="${toastId}" class="bs-toast toast fade show bg-${type}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="icon-base bx bx-bell me-2"></i>
+                <div class="me-auto fw-medium">Sponsor Manager</div>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", toastHTML);
+    const toastElement = document.getElementById(toastId);
+    const bsToast = new bootstrap.Toast(toastElement);
+    bsToast.show();
+
+    setTimeout(() => toastElement.remove(), 5000);
+}
+
+</script>

@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Sponsor{% endblock %}
+
+{% block body %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header">Edit Sponsor</h5>
+                <div class="card-body">
+                    <form id="editSponsorForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Sponsor Name</label>
+                            <input type="text" class="form-control" id="name" value="{{ sponsor.name }}" required>
+                            <div class="invalid-feedback" id="nameError">Sponsor name cannot contain special characters.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="website" class="form-label">Website</label>
+                            <input type="text" class="form-control" id="website" value="{{ sponsor.website }}">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitEditForm({{ sponsor.id }})">Update Sponsor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="{{ path('app_sponsor_index') }}" class="btn btn-secondary mt-3">Back to Sponsors</a>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<script>
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `bs-toast toast fade show bg-${type}`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+
+    toast.innerHTML = `
+        <div class="toast-header">
+            <i class="icon-base bx bx-bell me-2"></i>
+            <div class="me-auto fw-medium">Notification</div>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+    `;
+
+    document.getElementById('toastContainer').appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 500);
+    }, 5000);
+}
+
+function submitEditForm(sponsorId) {
+    const name = document.getElementById("name").value.trim();
+    const website = document.getElementById("website").value.trim();
+
+    // Clear validation feedback
+    document.getElementById("nameError").style.display = 'none';
+
+    const nameRegex = /^[a-zA-Z0-9\s]*$/;
+    if (!name.match(nameRegex)) {
+        document.getElementById("nameError").style.display = 'block';
+        showToast("Invalid name. No special characters allowed.", "danger");
+        return;
+    }
+
+    const sponsorData = {
+        name: name,
+        website: website || null
+    };
+
+    fetch("{{ path('app_sponsor_edit', {'id': sponsor.id}) }}" , {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        body: JSON.stringify(sponsorData)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to update sponsor.");
+        return response.json();
+    })
+    .then(data => {
+        showToast("Sponsor updated successfully!", "primary");
+    })
+    .catch(error => {
+        showToast(error.message || "An error occurred.", "danger");
+    });
+}
+</script>
+{% endblock %}

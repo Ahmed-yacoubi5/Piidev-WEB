@@ -1,0 +1,159 @@
+    {% block body %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Event Calendar for {{ year }}</h3>
+        </div>
+        <div class="card-body">
+            <!-- FullCalendar Container -->
+            <div id="calendar" class="border p-3 rounded"></div>
+        </div>
+    </div>
+</div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: {{ events|raw }},
+            locale: 'en', // Optionally set a locale
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,dayGridWeek,dayGridDay'
+            },
+            eventColor: '#378006',  // Change event color
+            buttonText: {
+                today: 'Today',
+                month: 'Month',
+                week: 'Week',
+                day: 'Day'
+            },
+            events: {{ events|raw }},
+            eventClick: function(info) {
+                alert('Event: ' + info.event.title);
+            }
+        });
+        
+        calendar.render();
+    });
+</script>
+
+<!-- Custom CSS to improve visual appearance and add animation -->
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+        transition: background-color 0.5s ease;
+    }
+    .container {
+        max-width: 1200px;
+        transition: margin-top 0.5s ease;
+    }
+    .card {
+        margin-top: 20px;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background-color: #007bff;
+        transition: background-color 0.3s ease;
+    }
+    .card-header:hover {
+        background-color: #0056b3;
+    }
+    .card-body {
+        background-color: #ffffff;
+        padding: 20px;
+        transition: transform 0.3s ease-out;
+    }
+    #calendar {
+        margin-top: 20px;
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+    }
+
+    /* Custom button styles */
+    .fc-dayGridMonth-button, .fc-dayGridWeek-button, .fc-dayGridDay-button {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .fc-dayGridMonth-button:hover, .fc-dayGridWeek-button:hover, .fc-dayGridDay-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: bold;
+    }
+
+    /* Fade in effect for calendar */
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    /* Button animations */
+    .fc-prev-button, .fc-next-button {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .fc-prev-button:hover, .fc-next-button:hover {
+        transform: scale(1.2);
+    }
+
+    /* Event styling */
+    .fc-event {
+        border-radius: 5px;
+        background-color: #28a745; /* Green color for events */
+        color: white;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .fc-event:hover {
+        transform: scale(1.05);
+    }
+
+    /* Tooltip effect for events */
+    .fc-event-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .fc-event:hover .fc-event-title {
+        text-decoration: underline;
+    }
+
+    /* Calendar header styling */
+    .fc-toolbar {
+        background-color: #f1f1f1;
+        border-radius: 10px;
+        padding: 10px 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+{% endblock %}

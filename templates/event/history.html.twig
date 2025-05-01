@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}History{% endblock %}
+
+{% block body %}
+    <h1>History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Entity Type</th>
+                <th>Entity ID</th>
+                <th>Details</th>
+                <th>Performed By</th>
+                <th>Performed At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history in histories %}
+                <tr>
+                    <td>{{ history.action }}</td>
+                    <td>{{ history.entityType }}</td>
+                    <td>{{ history.entityId }}</td>
+                    <td>{{ history.details }}</td>
+                    <td>{{ history.performedBy }}</td>
+                    <td>{{ history.performedAt|date('Y-m-d H:i:s') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

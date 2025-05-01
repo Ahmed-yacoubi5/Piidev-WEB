@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}List Events{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Events /</span> List</h4>
+
+    {# STATISTIQUES #}
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow-lg animate__animated animate__fadeInUp">
+                <div class="card-body">
+                    <h5 class="card-title">Total Events</h5>
+                    <p class="card-text fs-4">{{ total_events }}</p>
+                    <i class="bx bx-calendar-check bx-lg animate__animated animate__pulse animate__infinite"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow-lg animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="card-body">
+                    <h5 class="card-title">Average Capacity</h5>
+                    <p class="card-text fs-4">{{ average_capacity|number_format(0) }}</p>
+                    <i class="bx bx-pie-chart-alt bx-lg animate__animated animate__shakeX animate__infinite"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-info text-white shadow-lg animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="card-body">
+                    <h5 class="card-title">Events with Sponsors</h5>
+                    <p class="card-text fs-4">{{ events_with_sponsors }}</p>
+                    <i class="bx bx-badge bx-lg animate__animated animate__zoomIn animate__infinite"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-warning text-white shadow-lg animate__animated animate__fadeInUp animate__delay-3s">
+                <div class="card-body">
+                    <h5 class="card-title">Public Events</h5>
+                    <p class="card-text fs-4">{{ public_events }}</p>
+                    <i class="bx bx-globe bx-lg animate__animated animate__bounce animate__infinite"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card bg-danger text-white shadow-lg animate__animated animate__fadeInUp animate__delay-4s">
+                <div class="card-body">
+                    <h5 class="card-title">Private Events</h5>
+                    <p class="card-text fs-4">{{ private_events }}</p>
+                    <i class="bx bx-lock-alt bx-lg animate__animated animate__flipInX animate__infinite"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# FORMULAIRE DE FILTRAGE #}
+    <div class="card mb-3 shadow-lg">
+        <div class="card-body">
+            <form method="get" action="{{ path('event_list') }}" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <input type="text" name="searchLocation" class="form-control" placeholder="Search by location" value="{{ searchLocation }}">
+                </div>
+                <div class="col-auto">
+                    <select name="sort" class="form-select">
+                        <option value="startDate" {{ sort == 'startDate' ? 'selected' : '' }}>Start Date</option>
+                        <option value="endDate" {{ sort == 'endDate' ? 'selected' : '' }}>End Date</option>
+                        <option value="capacity" {{ sort == 'capacity' ? 'selected' : '' }}>Capacity</option>
+                        <option value="title" {{ sort == 'title' ? 'selected' : '' }}>Title</option>
+                        <option value="location" {{ sort == 'location' ? 'selected' : '' }}>Location</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select name="order" class="form-select">
+                        <option value="ASC" {{ order == 'ASC' ? 'selected' : '' }}>Ascending</option>
+                        <option value="DESC" {{ order == 'DESC' ? 'selected' : '' }}>Descending</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# LISTE DES ÉVÉNEMENTS #}
+    <div class="card shadow-lg animate__animated animate__fadeInUp">
+        <div class="card-body">
+            {% if events is empty %}
+                <div class="alert alert-warning">No events found.</div>
+            {% else %}
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Location</th>
+                            <th>Capacity</th>
+                            <th>Public</th>
+                            <th colspan="3" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.title }}</td> 
+                                <td>{{ event.startDate|date('Y-m-d H:i') }}</td>
+                                <td>{{ event.endDate|date('Y-m-d H:i') }}</td>
+                                <td>{{ event.location }}</td>
+                                <td>{{ event.capacity ?: 'N/A' }}</td>
+                                <td>{{ event.isPublic() ? 'Yes' : 'No' }}</td>
+                                <td>
+                                    <a href="{{ path('event_show', { id: event.id }) }}" class="btn btn-info btn-sm" title="View">
+                                        <i class='bx bx-show'></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('event_edit', { id: event.id }) }}" class="btn btn-warning btn-sm" title="Edit">
+                                        <i class='bx bx-edit'></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="{{ path('event_delete', { id: event.id }) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                            <i class="bx bx-trash"></i> 
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

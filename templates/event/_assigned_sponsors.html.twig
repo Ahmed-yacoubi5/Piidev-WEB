@@ -1,0 +1,18 @@
+{% if sponsors is empty %}
+  <p class="text-muted">No sponsors assigned yet.</p>
+{% else %}
+  <div class="d-flex flex-wrap gap-2">
+    {% for sponsor in sponsors %}
+      <div class="badge bg-label-primary d-flex align-items-center">
+        <i class="bx bx-user me-1"></i> {{ sponsor.name }}
+        <button
+          class="btn btn-sm btn-link text-danger ms-2 p-0"
+          onclick="removeSponsor({{ sponsor.id }})"
+          title="Remove sponsor"
+        >
+          <i class="bx bx-x"></i>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

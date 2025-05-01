@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique{% endblock %}
+
+{% block body %}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Administration /</span> Historique</h4>
+
+<div class="card">
+    <h5 class="card-header">Liste des actions</h5>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th>Action</th>
+                    <th>Type d'entité</th>
+                    <th>ID entité</th>
+                    <th>Détails</th>
+                    <th>Effectué par</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                {% for history in histories %}
+                    <tr>
+                        <td><i class="bx bx-cog me-1"></i> {{ history.action }}</td>
+                        <td>{{ history.entityType }}</td>
+                        <td>{{ history.entityId }}</td>
+                        <td>{{ history.details }}</td>
+                        <td>{{ history.performedBy }}</td>
+                        <td>{{ history.performedAt|date('Y-m-d H:i') }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucune action enregistrée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

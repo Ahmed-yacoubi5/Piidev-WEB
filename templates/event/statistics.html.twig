@@ -1,0 +1,40 @@
+{# templates/event/statistics.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Event Statistics{% endblock %}
+
+{% block body %}
+    <h1>Event Statistics</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Statistic</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Total Events</td>
+                <td>{{ total_events }}</td>
+            </tr>
+            <tr>
+                <td>Average Capacity</td>
+                <td>{{ average_capacity|number_format(0) }}</td>
+            </tr>
+            <tr>
+                <td>Events with Sponsors</td>
+                <td>{{ events_with_sponsors }}</td>
+            </tr>
+            <tr>
+                <td>Public Events</td>
+                <td>{{ public_events }}</td>
+            </tr>
+            <tr>
+                <td>Private Events</td>
+                <td>{{ private_events }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
