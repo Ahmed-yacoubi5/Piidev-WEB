@@ -10,15 +10,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+<<<<<<< HEAD
 use Dompdf\Dompdf;
 use Dompdf\Options;
+=======
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
 
 #[Route('/absence')]
 final class AbsenceController extends AbstractController
 {
+<<<<<<< HEAD
     #[Route('', name: 'app_absence_index', methods: ['GET'])]
     public function index(Request $request, AbsenceRepository $absenceRepository): Response
     {
+=======
+    #[Route(name: 'app_absence_index', methods: ['GET'])]
+    public function index(Request $request, AbsenceRepository $absenceRepository): Response
+    {
+
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
         $query = $request->query->get('query');
         $sort = $request->query->get('sort');
         $order = $request->query->get('order', 'asc');
@@ -50,6 +60,7 @@ final class AbsenceController extends AbstractController
         ]);
     }
 
+<<<<<<< HEAD
     #[Route('/stats', name: 'app_absence_stats', methods: ['GET'])]
     public function stats(AbsenceRepository $absenceRepository): Response
     {
@@ -185,6 +196,8 @@ final class AbsenceController extends AbstractController
         );
     }
 
+=======
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
     #[Route('/{id}', name: 'app_absence_show', methods: ['GET'])]
     public function show(Absence $absence): Response
     {
@@ -221,4 +234,24 @@ final class AbsenceController extends AbstractController
 
         return $this->redirectToRoute('app_absence_index', [], Response::HTTP_SEE_OTHER);
     }
+<<<<<<< HEAD
+=======
+
+    #[Route('/absence/stats', name: 'app_absence_stats')]
+    public function stats(AbsenceRepository $absenceRepository): Response
+    {
+        $total = $absenceRepository->countAll();
+        $byStatut = $absenceRepository->countByStatut();
+        $byType = $absenceRepository->countByType();
+
+        return $this->render('absence/stats.html.twig', [
+            'total' => $total,
+            'byStatut' => $byStatut,
+            'byType' => $byType,
+        ]);
+    }
+
+    
+
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
 }

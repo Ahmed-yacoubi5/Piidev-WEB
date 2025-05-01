@@ -5,7 +5,10 @@ namespace App\Repository;
 use App\Entity\Absence;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+<<<<<<< HEAD
 use Doctrine\ORM\QueryBuilder;
+=======
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
 
 /**
  * @extends ServiceEntityRepository<Absence>
@@ -17,6 +20,7 @@ class AbsenceRepository extends ServiceEntityRepository
         parent::__construct($registry, Absence::class);
     }
 
+<<<<<<< HEAD
     public function searchWithSort(?string $query): QueryBuilder
     {
         $qb = $this->createQueryBuilder('a'); // 'a' est l'alias ici
@@ -38,10 +42,17 @@ class AbsenceRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a');
         
         // Add search condition if query is provided
+=======
+    public function searchAndSort(?string $query, ?string $sortField, string $order): array
+    {
+        $qb = $this->createQueryBuilder('a');
+    
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
         if ($query) {
             $qb->andWhere('a.type LIKE :q OR a.statut LIKE :q')
                ->setParameter('q', '%' . $query . '%');
         }
+<<<<<<< HEAD
         
         // Add sorting based on provided parameters
         if ($sort) {
@@ -64,6 +75,19 @@ class AbsenceRepository extends ServiceEntityRepository
     
 
     // Nombre total d'absences
+=======
+    
+        // Liste blanche des champs autorisés pour éviter l'injection
+        $allowedSorts = ['datedebut', 'datefin', 'statut'];
+        if ($sortField && in_array($sortField, $allowedSorts)) {
+            $qb->orderBy('a.' . $sortField, strtoupper($order) === 'DESC' ? 'DESC' : 'ASC');
+        }
+    
+        return $qb->getQuery()->getResult();
+    }
+
+    // Nombre total d’absences
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
     public function countAll(): int
     {
         return (int) $this->createQueryBuilder('a')

@@ -10,7 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+<<<<<<< HEAD
 use App\Service\CalendarificService;
+=======
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
 
 #[Route('/conges')]
 final class CongesController extends AbstractController
@@ -82,6 +85,9 @@ final class CongesController extends AbstractController
 
         return $this->redirectToRoute('app_conges_index', [], Response::HTTP_SEE_OTHER);
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 69be1e3bc4cbe3135e3f3fb5210fe2b11da2cd5b
 }
