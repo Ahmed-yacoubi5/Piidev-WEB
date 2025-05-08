@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier utilisateur{% endblock %}
+{%block aa%}
+{% endblock %}
+{%block bb%}
+{% endblock %}
+{%block cc%}
+{% endblock %}
+{% block body %}
+    <h1>Modifier l'utilisateur {{ user.firstName }} {{ user.lastName }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        
+        {% if user.image %}
+            <div class="mb-3">
+                <label>Image actuelle :</label>
+                <img src="{{ user.image }}" style="max-width: 200px; display: block;">
+            </div>
+        {% endif %}
+
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+{% endblock %}

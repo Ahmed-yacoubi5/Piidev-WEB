@@ -1,0 +1,61 @@
+{# templates/produit/chatbot.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Chatbot{% endblock %}
+{%block aa%}
+{% endblock %}
+{%block bb%}
+{% endblock %}
+{%block cc%}
+{% endblock %}
+{% block body %}
+<div class="container mt-4">
+  
+
+  {% if first_name is defined and last_name is defined %}
+  <div class="alert alert-success fs-4 fw-bold">
+    👋 Bienvenue <span class="text-primary">{{ first_name|capitalize }} {{ last_name|upper }}</span>, vous pouvez poser vos questions à notre assistant RH intelligent.
+  </div>
+{% endif %}
+
+<div class="container mt-4">
+  <h1>Assistant Chatbot</h1>
+
+  <p>
+    <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-secondary mb-3">
+      <i class="fas fa-arrow-left"></i> Retour
+    </a>
+  </p>
+
+  {% if error %}
+    <div class="alert alert-danger">
+      <strong>Erreur API :</strong> {{ error }}
+    </div>
+  {% endif %}
+
+  {% if history is defined %}
+  <div class="mb-3">
+    {% for item in history %}
+      {% if item.sender == 'user' %}
+        <div class="alert alert-secondary"><strong>You:</strong> {{ item.message }}</div>
+      {% else %}
+        <div class="alert alert-info"><strong>Bot:</strong> {{ item.message }}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+  <form method="post">
+    <div class="mb-3">
+      <textarea name="message"
+                class="form-control"
+                rows="4"
+                placeholder="Posez votre question…">{{ message }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-paper-plane"></i> Envoyer
+    </button>
+  </form>
+</div>
+{% endblock %}

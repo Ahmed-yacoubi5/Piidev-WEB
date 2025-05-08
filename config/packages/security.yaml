@@ -1,16 +1,17 @@
 security:
-    # Configuration des encodages de mot de passe
+    enable_authenticator_manager: true
+
+    # Hachage des mots de passe
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # Configuration des fournisseurs d'utilisateurs
+    # Configuration des providers
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
 
-    # Définition des pare-feu (firewalls)
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -20,26 +21,22 @@ security:
             lazy: true
             provider: app_user_provider
             form_login:
-                login_path: app_login  # Route pour afficher la page de connexion
-                check_path: app_login  # Route pour traiter le formulaire de connexion
-                enable_csrf: true
-                default_target_path: /home
+                default_target_path: /user/                                                                           
+                login_path: app_login
+                check_path: app_login
+                username_parameter: username   # <--- Ajouté
+                password_parameter: password   # <--- Ajouté
+                  # Redirection après connexion réussie
             logout:
-                path: app_logout  # Route pour la déconnexion
-                # where to redirect after logout
-                target: app_home
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 604800 # 1 semaine
-                path: /
-    
-    # Définition des rôles et restrictions d'accès
+                path: app_logout
+                target: app_login
+
+    # Contrôle d'accès
     access_control:
-        - { path: ^/home, roles: PUBLIC_ACCESS }  # Permet à tout le monde d'accéder à /home
-        - { path: ^/admin, roles: ROLE_ADMIN }  # Restriction aux admins pour /admin
-        - { path: ^/profile, roles: ROLE_USER }  # Accessible aux utilisateurs connectés
-        - { path: ^/back, roles: ROLE_USER }  # Restreint l'accès aux pages utilisateur
-        - { path: ^/uploads/cv/, roles: ROLE_USER }
+        - { path: ^/user/, roles: ROLE_ADMIN }
+        - { path: ^/chatbotFront, roles: ROLE_USER }
+        
+        
 
 when@test:
     security:

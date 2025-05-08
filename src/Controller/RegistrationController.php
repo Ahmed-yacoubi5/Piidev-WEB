@@ -2,59 +2,75 @@
 
 namespace App\Controller;
 
-use App\Entity\Utilisateur;
-use App\Form\CandidatRegistrationType;
-use App\Repository\RoleRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
+use App\Form\UserType;
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Twilio\Rest\Client;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\MailerInterface;
+    use Symfony\Component\Mime\Email;
 class RegistrationController extends AbstractController
 {
+    
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request,
-        UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager,
-        RoleRepository $roleRepository
+        UserService $userService,
+        ParameterBagInterface $params,
+        LoggerInterface $logger,
+        MailerInterface $mailer // 👈 ajout du mailer
     ): Response {
-        $user = new Utilisateur();
-        $form = $this->createForm(CandidatRegistrationType::class, $user);
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+    
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // Définir le rôle candidat (ID 3)
-            $roleCandidat = $roleRepository->find(3);
-            if (!$roleCandidat) {
-                throw new \Exception('Le rôle candidat n\'existe pas');
-            }
-            $user->setRole($roleCandidat);
-            
-            // Encoder le mot de passe
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            );
-
+            $plainPassword = $form->get('password')->getData();
+            $userService->register($user, $plainPassword);
+    
+            // 1. Envoi du SMS
             try {
-                $entityManager->persist($user);
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.');
-                return $this->redirectToRoute('app_login');
+                $sid    = $params->get('twilio.sid');
+                $token  = $params->get('twilio.auth_token');
+                $from   = $params->get('twilio.from');
+    
+                $client = new Client($sid, $token);
+                $client->messages->create($user->getPhoneNumber(), [
+                    'from' => $from,
+                    'body' => "Bonjour {$user->getFirstName()}, votre inscription a bien été enregistrée. Bienvenue !"
+                ]);
+    
+                $logger->info('✅ SMS envoyé via Twilio.');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.');
-                return $this->redirectToRoute('app_register');
+                $logger->error('❌ Erreur lors de l’envoi du SMS : ' . $e->getMessage());
             }
+    
+            // 2. Envoi de l’email
+            try {
+                $email = (new Email())
+                    ->from('ahmedchihi00@gmail.com') // 👈 à personnaliser
+                    ->to($user->getEmail())
+                    ->subject('Bienvenue sur notre site !')
+                    ->text("Bonjour {$user->getFirstName()}, votre compte a été créé avec succès.")
+                    ->html("<p>Bonjour <strong>{$user->getFirstName()}</strong>,<br>Votre compte a été créé avec succès. Bienvenue parmi nous !</p>");
+    
+                $mailer->send($email);
+                $logger->info('✅ Email envoyé avec succès.');
+            } catch (\Exception $e) {
+                $logger->error('❌ Erreur lors de l’envoi de l’email : ' . $e->getMessage());
+            }
+    
+            return $this->redirectToRoute('app_login');
         }
-
+    
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
+    
 }
